@@ -192,7 +192,8 @@ def rows_from_csv(filename, predicate=None, encoding='utf-8'):
     """
     pred = predicate or bool
     with open(filename, 'rb') as f:
-        for row in _UnicodeReader(f, encoding=encoding, delimiter=',', quotechar='"', escapechar='\\'):
+        for row in csv.reader((line.decode() for line in f.readlines()), delimiter=',', quotechar='"', escapechar='\\'):
+        # for row in _UnicodeReader(f, encoding=encoding, delimiter=',', quotechar='"', escapechar='\\'):
             ident, created, reference_id, origin, classification, references, header, body = row
             if row and pred(reference_id):
                 yield ident, created, reference_id, origin, classification, references, header, body
@@ -206,7 +207,7 @@ class _UTF8Recoder:
         self.reader = codecs.getreader(encoding)(f)
 
     def __iter__(self):
-        return self
+        return iter(self.reader)
 
     def next(self):
         return self.reader.next().encode("utf-8")
@@ -223,7 +224,7 @@ class _UnicodeReader:
 
     def next(self):
         row = self.reader.next()
-        return [unicode(s, "utf-8") for s in row]
+        return [s.decode("utf-8") for s in row]
 
     def __iter__(self):
         return self

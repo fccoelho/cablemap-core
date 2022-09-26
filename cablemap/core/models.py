@@ -154,7 +154,7 @@ class Cable(object):
         """
         if not reference_id:
             raise ValueError('The reference id must be provided')
-        self.reference_id = unicode(reference_id)
+        self.reference_id = reference_id
         self.origin = None
         self.header = None
         self.content = None
